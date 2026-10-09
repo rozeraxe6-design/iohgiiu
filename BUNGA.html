@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glowing Flower Animation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        :root {
+            --glow-primary: #ffe4a0;
+            --glow-secondary: #ff6236;
+            --glow-shadow-1: #ffd85f;
+            --glow-shadow-2: #ff6236;
+        }
+
+        .theme-sunset {
+            --glow-primary: #ffe4a0;
+            --glow-secondary: #ff6236;
+            --glow-shadow-1: #ffd85f;
+            --glow-shadow-2: #ff6236;
+        }
+
+        .theme-cyan {
+            --glow-primary: #a0f0ff;
+            --glow-secondary: #36a2ff;
+            --glow-shadow-1: #5ffdff;
+            --glow-shadow-2: #3694ff;
+        }
+
+        .theme-emerald {
+            --glow-primary: #a0ffa8;
+            --glow-secondary: #36ff7b;
+            --glow-shadow-1: #5fff73;
+            --glow-shadow-2: #22d3ee;
+        }
+
+        body {
+            background: #030408;
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Container Query Setup for CQI units as shown in the original screenshot code */
+        .flower-card {
+            container-type: inline-size;
+            position: relative;
+            width: 100%;
+            max-width: 520px;
+            height: 680px;
+            background: radial-gradient(circle at 50% 30%, #150a21 0%, #080311 50%, #020105 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 28px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 40px rgba(255, 98, 54, 0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .flower-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 80px;
+        }
+
+        /* Main Stem Growth */
+        .flower-stem {
+            position: absolute;
+            bottom: 80px;
+            width: 6px;
+            height: 0px;
+            background: linear-gradient(to top, #360c02, var(--glow-secondary), var(--glow-primary));
+            border-radius: 10px;
+            box-shadow: 0 0 15px var(--glow-secondary), 0 0 30px var(--glow-primary);
+            animation: growStem 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            transform-origin: bottom center;
+        }
+
+        @keyframes growStem {
+            0% { height: 0px; }
+            100% { height: 320px; }
+        }
+
+        /* Petal / Leaf Styling matching original screenshot logic */
+        .flower-leaf {
+            position: absolute;
+            width: 65px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--glow-secondary) 0%, #600f00 100%);
+            border-radius: 0px 100% 50% 100% / 0px 100% 30% 100%;
+            box-shadow: inset 0 0 10px var(--glow-primary), 0 0 15px var(--glow-secondary);
+            opacity: 0;
+            transform-origin: bottom left;
+            animation: bloomLeaf 1.2s ease-out forwards;
+            transition: background 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .flower-leaf.left {
+            transform-origin: bottom right;
+            border-radius: 100% 0px 100% 50% / 100% 0px 100% 30%;
+        }
+
+        @keyframes bloomLeaf {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(0deg);
+            }
+            100% {
+                opacity: 0.95;
+            }
+        }
+
+        /* Position leaves sequentially along the stem */
+        .leaf-1 { bottom: 130px; left: calc(50% - 65px); animation-delay: 0.9s; transform: rotate(-25deg) scale(1); }
+        .leaf-2 { bottom: 150px; left: 50%; animation-delay: 1.1s; transform: rotate(25deg) scale(1); }
+        .leaf-3 { bottom: 190px; left: calc(50% - 60px); animation-delay: 1.3s; transform: rotate(-20deg) scale(0.9); }
+        .leaf-4 { bottom: 210px; left: 50%; animation-delay: 1.5s; transform: rotate(20deg) scale(0.9); }
+        .leaf-5 { bottom: 250px; left: calc(50% - 55px); animation-delay: 1.7s; transform: rotate(-15deg) scale(0.8); }
+        .leaf-6 { bottom: 270px; left: 50%; animation-delay: 1.9s; transform: rotate(15deg) scale(0.8); }
+
+        .flower-bud-container {
+            position: absolute;
+            bottom: 395px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            animation: fadeInBud 1s ease-out 2.1s forwards;
+        }
+
+        @keyframes fadeInBud {
+            0% { opacity: 0; transform: translateX(-50%) scale(0.2); }
+            100% { opacity: 1; transform: translateX(-50%) scale(1); }
+        }
+
+        /* Flower Light elements extracted directly from code screenshot */
+        .flower-Light {
+            width: 3cqi;
+            aspect-ratio: 1;
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0;
+            animation: lightPulse 2.8s infinite alternate ease-in-out;
+            transition: background-color 0.5s ease, filter 0.5s ease;
+        }
+
+        .flower-Light:nth-child(odd) {
+            background-color: var(--glow-primary);
+            filter: blur(2cqi) drop-shadow(0 0 5cqi var(--glow-shadow-1));
+            animation-delay: 0.2s;
+        }
+
+        .flower-Light:nth-child(even) {
+            background-color: var(--glow-secondary);
+            filter: blur(2cqi) drop-shadow(8px 8px 5cqi var(--glow-shadow-2));
+            animation-delay: 0.7s;
+        }
+
+        .flower-Light.center-orb {
+            width: 7cqi;
+            background-color: var(--glow-primary);
+            filter: blur(1cqi) drop-shadow(0 0 6cqi var(--glow-secondary));
+            opacity: 1;
+        }
+
+        @keyframes lightPulse {
+            0% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1.3);
+            }
+        }
+
+        /* Bottom Grass Elements */
+        .grass-container {
+            position: absolute;
+            bottom: 75px;
+            width: 280px;
+            height: 90px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .grass-blade {
+            position: absolute;
+            bottom: 0;
+            width: 4px;
+            height: 70px;
+            background: linear-gradient(to top, #120300, var(--glow-secondary));
+            border-radius: 100% 0 0 0;
+            transform-origin: bottom center;
+            box-shadow: 0 0 8px var(--glow-secondary);
+            animation: growGrass 1.5s ease-out forwards;
+        }
+
+        @keyframes growGrass {
+            0% { height: 0; opacity: 0; }
+            100% { opacity: 0.85; }
+        }
+
+        /* Particle Overlay Canvas */
+        #sparklesCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* Control Buttons */
+        .btn-control {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            transition: all 0.25s ease;
+        }
+
+        .btn-control:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2deg);
+        }
+    </style>
+</head>
+<body class="theme-sunset">
+
+    <div class="flower-card" id="flowerCard">
+        <!-- Header Title -->
+        <div class="absolute top-6 left-0 right-0 text-center z-10 px-4">
+            <h1 class="text-2xl font-bold tracking-wide">
+                <span class="text-amber-300 drop-shadow-[0_0_12px_rgba(255,216,95,0.8)]">Glowing Flower</span> 
+                <span class="text-gray-200">Animation</span>
+            </h1>
+            <p class="text-xs text-gray-400 mt-1">Inspired by CSS Container Queries & Custom Filters</p>
+        </div>
+
+        <!-- Ambient Particle Canvas -->
+        <canvas id="sparklesCanvas"></canvas>
+
+        <!-- Flower Graphics Assembly -->
+        <div class="flower-wrapper" id="flowerWrapper">
+            <!-- Dynamic Bottom Grass -->
+            <div class="grass-container" id="grassContainer"></div>
+
+            <!-- Stem -->
+            <div class="flower-stem"></div>
+
+            <!-- Curved Stem Leaves -->
+            <div class="flower-leaf leaf-1 left"></div>
+            <div class="flower-leaf leaf-2"></div>
+            <div class="flower-leaf leaf-3 left"></div>
+            <div class="flower-leaf leaf-4"></div>
+            <div class="flower-leaf leaf-5 left"></div>
+            <div class="flower-leaf leaf-6"></div>
+
+            <!-- Glowing Top Light Bud -->
+            <div class="flower-bud-container">
+                <div class="flower-Light center-orb"></div>
+                <div class="flower-Light" style="top: -16px; left: 8px;"></div>
+                <div class="flower-Light" style="top: 10px; left: -16px;"></div>
+                <div class="flower-Light" style="top: -12px; left: -12px;"></div>
+                <div class="flower-Light" style="top: 16px; left: 16px;"></div>
+                <div class="flower-Light" style="top: 2px; left: 22px;"></div>
+            </div>
+        </div>
+
+        <!-- Interactive Control Palette -->
+        <div class="absolute bottom-5 left-0 right-0 flex justify-center items-center gap-3 z-20">
+            <button onclick="restartAnimation()" class="btn-control px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase flex items-center gap-2 text-amber-200">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/></svg>
+                Replay Bloom
+            </button>
+
+            <button onclick="cycleTheme()" class="btn-control p-2.5 rounded-full text-amber-200" title="Change Theme Color">
+                <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.2c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.2 19.54 10.55 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /* Generate Grass Blades at base */
+        function createGrass() {
+            const container = document.getElementById('grassContainer');
+            container.innerHTML = '';
+            const bladeCount = 18;
+
+            for (let i = 0; i < bladeCount; i++) {
+                const blade = document.createElement('div');
+                blade.className = 'grass-blade';
+                
+                const height = Math.floor(Math.random() * 30) + 50;
+                const offset = (i - bladeCount / 2) * 14;
+                const rotation = (i - bladeCount / 2) * 4 + (Math.random() * 8 - 4);
+                const delay = (Math.random() * 0.8 + 0.2).toFixed(2);
+
+                blade.style.height = `${height}px`;
+                blade.style.left = `calc(50% + ${offset}px)`;
+                blade.style.transform = `rotate(${rotation}deg)`;
+                blade.style.animationDelay = `${delay}s`;
+
+                if (i % 2 === 0) {
+                    blade.style.borderRadius = '0 100% 0 0';
+                }
+
+                container.appendChild(blade);
+            }
+        }
+
+        /* Floating Particle System */
+        const canvas = document.getElementById('sparklesCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            const card = document.getElementById('flowerCard');
+            canvas.width = card.clientWidth;
+            canvas.height = card.clientHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height - Math.random() * 180;
+                this.size = Math.random() * 3 + 1;
+                this.speedY = Math.random() * 0.7 + 0.2;
+                this.speedX = (Math.random() - 0.5) * 0.6;
+                this.opacity = Math.random() * 0.7 + 0.3;
+                this.life = 0;
+                this.maxLife = Math.random() * 200 + 100;
+            }
+
+            update() {
+                this.y -= this.speedY;
+                this.x += Math.sin(this.life * 0.04) * 0.5 + this.speedX;
+                this.life++;
+
+                if (this.life >= this.maxLife || this.y < 0) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                const style = getComputedStyle(document.body);
+                const primaryColor = style.getPropertyValue('--glow-primary').trim() || '#ffe4a0';
+                
+                ctx.save();
+                ctx.globalAlpha = Math.sin((this.life / this.maxLife) * Math.PI) * this.opacity;
+                ctx.fillStyle = primaryColor;
+                ctx.shadowColor = primaryColor;
+                ctx.shadowBlur = 8;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 40; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        /* Replay Bloom Animation */
+        function restartAnimation() {
+            const wrapper = document.getElementById('flowerWrapper');
+            wrapper.style.display = 'none';
+            wrapper.offsetHeight; // Trigger browser reflow
+            wrapper.style.display = 'flex';
+            createGrass();
+        }
+
+        /* Color Theme Switcher */
+        const themes = ['theme-sunset', 'theme-cyan', 'theme-emerald'];
+        let currentThemeIndex = 0;
+
+        function cycleTheme() {
+            document.body.classList.remove(themes[currentThemeIndex]);
+            currentThemeIndex = (currentThemeIndex + 1) % themes.length;
+            document.body.classList.add(themes[currentThemeIndex]);
+        }
+
+        /* Initialize Page */
+        window.addEventListener('load', () => {
+            resizeCanvas();
+            createGrass();
+            initParticles();
+            animateParticles();
+        });
+
+        window.addEventListener('resize', resizeCanvas);
+    </script>
+</body>
+</html>
